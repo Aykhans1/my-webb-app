@@ -67,11 +67,9 @@ public/ - Saytın vizual üslubunu təyin edən CSS faylları.
 
 database.sqlite - Bütün məlumatların saxlandığı lokal verilənlər bazası.
 
-// --- TƏHLÜKƏSİZ LOGİN (SQL INJECTION HƏLLİ) ---
-        const user = await db.get('SELECT * FROM users WHERE email = ? OR username = ?', [identifier, identifier]);
-
-
- 
+```javascript
+// Təhlükəli variant
+const user = await db.get(`SELECT * FROM users WHERE email = '${identifier}'`); 
 
 Xəbərdarlıq
 Bu layihə yalnız təhsil və laboratoriya testləri üçün nəzərdə tutulmuşdur. Layihə daxilindəki zəif kod nümunələri kiber-təhlükəsizlik boşluqlarını nümayiş etdirmək məqsədi daşıyır. Bu kodların real istehsalat mühitində (production) istifadə edilməsi qətiyyən tövsiyə olunmur. Layihə müəllifi qeyri-etik məqsədlər üçün istifadədən məsuliyyət daşımır.
