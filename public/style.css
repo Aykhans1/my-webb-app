@@ -1,0 +1,20 @@
+body {
+    background: #050505; color: #00ff41; font-family: 'Courier New', monospace;
+    display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0;
+}
+.container {
+    width: 90%; max-width: 600px; padding: 20px; border: 1px solid #00ff41;
+    margin-top: 50px; background: #0a0a0a; box-shadow: 0 0 15px #00ff4133;
+}
+input, textarea {
+    width: 100%; padding: 10px; margin: 10px 0; background: #111;
+    border: 1px solid #00ff41; color: #00ff41; box-sizing: border-box;
+}
+button {
+    width: 100%; padding: 12px; background: #00ff41; color: #000;
+    border: none; font-weight: bold; cursor: pointer; transition: 0.3s;
+}
+button:hover { box-shadow: 0 0 20px #00ff41; }
+.note { border-bottom: 1px solid #222; padding: 10px 0; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #00ff41; padding: 8px; text-align: left; }

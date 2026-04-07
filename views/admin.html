@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard | Oxunaqlı Versiya</title>
+    <style>
+        :root {
+            --sidebar-bg: #2c3e50;
+            --main-bg: #f8f9fa;
+            --accent: #2ecc71;
+            --text-dark: #2c3e50;
+            --text-muted: #7f8c8d;
+            --white: #ffffff;
+            --danger: #e74c3c;
+        }
+
+        body {
+            display: flex;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--main-bg);
+            color: var(--text-dark);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h2 { font-size: 1.5rem; margin-bottom: 30px; text-align: center; border-bottom: 1px solid #3e4f5f; padding-bottom: 10px; }
+
+        .nav-links { list-style: none; padding: 0; }
+        .nav-links li { margin: 10px 0; }
+        .nav-links a {
+            color: #bdc3c7;
+            text-decoration: none;
+            display: block;
+            padding: 12px;
+            border-radius: 8px;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { background: #34495e; color: white; }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 240px;
+            width: calc(100% - 240px);
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        /* Kartlar (Stats) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: var(--white);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent);
+        }
+        .stat-card h3 { margin: 0; color: var(--text-muted); font-size: 0.9rem; text-transform: uppercase; }
+        .stat-card p { margin: 10px 0 0; font-size: 2.2rem; font-weight: bold; color: var(--text-dark); }
+
+        /* Cədvəl Dizaynı */
+        .card-table {
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        h3.title { margin-top: 0; color: var(--text-dark); border-bottom: 2px solid #eee; padding-bottom: 10px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; padding: 15px; background: #fdfdfd; color: var(--text-muted); font-weight: 600; border-bottom: 2px solid #f1f1f1; }
+        td { padding: 15px; border-bottom: 1px solid #f1f1f1; font-size: 0.95rem; }
+        tr:hover { background: #f9f9f9; }
+
+        /* Düymələr */
+        .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .btn-del { background: #fdf2f2; color: var(--danger); border: 1px solid #f8d7da; }
+        .btn-del:hover { background: var(--danger); color: white; }
+        .btn-role { background: #f0fdf4; color: var(--accent); border: 1px solid #dcfce7; margin-left: 5px; }
+        .btn-role:hover { background: var(--accent); color: white; }
+
+        .badge-admin { background: #ebf5ff; color: #007bff; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Admin Panel</h2>
+        <ul class="nav-links">
+            <li><a href="/profile">👤 Profilim</a></li>
+            <li><a href="#" onclick="location.reload()">📊 Dashboard</a></li>
+            <li><a href="/logout" style="color: #ff7675;">🚪 Çıxış</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <h1>Sistem İcmalı</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Cəmi İstifadəçi</h3>
+                <p id="total-users">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Cəmi Qeydlər</h3>
+                <p id="total-notes">0</p>
+            </div>
+        </div>
+
+        <div class="card-table">
+            <h3 class="title">İstifadəçilərin İdarə Edilməsi</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>İstifadəçi</th>
+                        <th>Email</th>
+                        <th>Rol</th>
+                        <th>Əməliyyat</th>
+                    </tr>
+                </thead>
+                <tbody id="user-table"></tbody>
+            </table>
+        </div>
+
+        <div class="card-table">
+            <h3 class="title">Son Yazılan Qeydlər</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Müəllif</th>
+                        <th>Başlıq</th>
+                        <th>Tarix</th>
+                        <th>Nəzarət</th>
+                    </tr>
+                </thead>
+                <tbody id="all-notes-table"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function loadData() {
+            const stats = await fetch('/api/admin/stats').then(r => r.json());
+            document.getElementById('total-users').innerText = stats.users;
+            document.getElementById('total-notes').innerText = stats.notes;
+
+            const users = await fetch('/api/users').then(r => r.json());
+            document.getElementById('user-table').innerHTML = users.map(u => `
+                <tr>
+                    <td><strong>${u.username}</strong></td>
+                    <td>${u.email}</td>
+                    <td><span class="${u.role === 'admin' ? 'badge-admin' : ''}">${u.role.toUpperCase()}</span></td>
+                    <td>
+                        <button class="btn btn-del" onclick="deleteUser(${u.id})">Sil</button>
+                        <button class="btn btn-role" onclick="changeRole(${u.id}, '${u.role}')">Rol Dəyiş</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            const notes = await fetch('/api/admin/all-notes').then(r => r.json());
+            document.getElementById('all-notes-table').innerHTML = notes.map(n => `
+                <tr>
+                    <td>@${n.username}</td>
+                    <td>${n.title}</td>
+                    <td>${new Date(n.created_at).toLocaleDateString()}</td>
+                    <td><button class="btn btn-del" onclick="deleteNote(${n.id})">Sil</button></td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteUser(id) { if(confirm("Silinsin?")) { await fetch(`/api/users/${id}`, {method:'DELETE'}); loadData(); } }
+        async function deleteNote(id) { if(confirm("Silinsin?")) { await fetch(`/api/admin/notes/${id}`, {method:'DELETE'}); loadData(); } }
+        async function changeRole(id, role) {
+            await fetch(`/api/users/change-role/${id}`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ newRole: role === 'admin' ? 'user' : 'admin' })
+            });
+            loadData();
+        }
+        window.onload = loadData;
+    </script>
+</body>
+</html>

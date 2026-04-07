@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profil - CyberNotes</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="admin-link" style="display:none; margin-bottom: 20px;">
+    <a href="/admin" style="background: #ff0055; color: white; padding: 10px; text-decoration: none; font-weight: bold; border-radius: 5px;">
+        ⚠️ ADMİN PANELƏ KEÇİD
+    </a>
+</div>
+
+<script>
+    // Sessiyadakı istifadəçi məlumatlarını yoxlayırıq (və ya kiçik bir API ilə)
+    fetch('/api/check-auth')
+        .then(res => res.json())
+        .then(user => {
+            if(user.role === 'admin') {
+                document.getElementById('admin-link').style.display = 'block';
+            }
+        });
+
+    // Köhnə fetch('/api/my-notes') kodu aşağıda qalsın...
+</script>
+    <div class="container">
+        
+        <h2>Şəxsi Qeydlər</h2>
+        <form action="/api/notes" method="POST">
+            <input type="text" name="title" placeholder="Başlıq" required>
+            <textarea name="content" placeholder="Qeydiniz..." rows="4" required></textarea>
+            <button type="submit">Qeyd et</button>
+        </form>
+        <div id="notes"></div>
+        <br><a href="/logout" style="color:red">Çıxış</a>
+    </div>
+
+    <script>
+        fetch('/api/my-notes')
+            .then(res => res.json())
+            .then(data => {
+                const div = document.getElementById('notes');
+                data.forEach(n => {
+                    div.innerHTML += `<div class="note"><h3>${n.title}</h3><p>${n.content}</p><small>${n.created_at}</small></div>`;
+                });
+            });
+    </script>
+</body>
+</html>

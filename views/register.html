@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qeydiyyat Paneli</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .register-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+        .register-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745; /* Qeydiyyat üçün yaşıl rəng */
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-register:hover {
+            background-color: #218838;
+        }
+        .footer-links {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .footer-links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <h2>Yeni Hesab Yarat</h2>
+    <form action="/register" method="POST">
+        <div class="form-group">
+    <label for="username">İstifadəçi Adı</label>
+    <input 
+        type="text" 
+        id="username" 
+        name="username" 
+        placeholder="Məsələn: nicat01" 
+        pattern="[^@]+" 
+        title="İstifadəçi adında @ işarəsi ola bilməz" 
+        required
+    >
+    <small style="color: #666;">(@ işarəsi istifadə etməyin)</small>
+</div>
+
+        <div class="form-group">
+            <label for="email">E-poçt ünvanı</label>
+            <input type="email" id="email" name="email" placeholder="nümunə@mail.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Şifrə</label>
+            <input type="password" id="password" name="password" placeholder="Min. 6 simvol" required>
+        </div>
+        
+        <button type="submit" class="btn-register">Qeydiyyatdan keç</button>
+    </form>
+
+    <div class="footer-links">
+        <p>Artıq hesabınız var? <a href="/login">Daxil olun</a></p>
+    </div>
+</div>
+<script>document.getElementById('username').addEventListener('input', function (e) {
+    const username = e.target.value;
+    if (username.includes('@')) {
+        alert("İstifadəçi adında @ işarəsi istifadə etmək olmaz! Bu sahə e-poçt deyil.");
+        e.target.value = username.replace('@', ''); // @ işarəsini avtomatik silir
+    }
+});</script>
+</body>
+
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <link rel="stylesheet" href="/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Paneli</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 350px;
+        }
+        .login-container h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box; /* paddingin ölçünü pozmaması üçün */
+        }
+        .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-login:hover {
+            background-color: #0056b3;
+        }
+        .footer-links {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .footer-links a {
+            color: #007bff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Giriş Yap</h2>
+    <form action="/login" method="POST">
+        <div class="form-group">
+    <label for="identifier" style="color: #2c3e50; font-weight: bold;">İstifadəçi adı və ya E-poçt</label>
+    <input type="text" id="identifier" name="identifier" placeholder="Məs: nicat01 və ya nicat@mail.com" required 
+           style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px;">
+</div>
+        
+        <div class="form-group">
+            <label for="password" style="color: #2c3e50; font-weight: bold;">Şifrə</label>
+            <input type="password" id="password" name="password" placeholder="Şifrəniz" required>
+        </div>
+        
+        <button type="submit" class="btn-login">Daxil ol</button>
+    </form>
+
+    <div class="footer-links">
+        <p>Hesabınız yoxdur? <a href="/register">Qeydiyyatdan keçin</a></p>
+    </div>
+</div>
+
+</body>
+</html>
