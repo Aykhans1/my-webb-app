@@ -71,33 +71,32 @@ app.post('/register', async (req, res) => {
     } catch { res.send("Xəta: Email artıq var."); }
 });
 
+// --- DİQQƏT: BU KOD SQL INJECTION-A QARŞI ZƏİFDİR ---
 app.post('/login', async (req, res) => {
-    const { identifier, password } = req.body; // HTML-də inputun adını 'identifier' qoyuruq
+    const { identifier, password } = req.body;
 
     try {
-        // SQL-də OR istifadə edərək hər iki sütunu yoxlayırıq
-        const user = await db.get(
-            'SELECT * FROM users WHERE email = ? OR username = ?', 
-            [identifier, identifier]
-        );
+        // Təhlükəli sorğu: İstifadəçi daxil etdiyi mətni birbaşa string-in içinə qoyuruq
+        // Bu, kiber-təhlükəsizlikdə "String Concatenation" xətası adlanır
+        const query = `SELECT * FROM users WHERE email = '${identifier}' OR username = '${identifier}'`;
+        
+        console.log("İcra olunan sorğu:", query); // Terminalda sorğunun necə dəyişdiyini görəcəksən
+        
+        const user = await db.get(query); // Burada artıq ikinci parametr ([identifier]) yoxdur
 
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (isMatch) {
-                // Sessiyanı başladırıq
                 req.session.user = { id: user.id, username: user.username, role: user.role };
-                
-                // Admini və Useri profilinə göndəririk (artıq orada Admin düyməsi olacaq)
                 res.redirect('/profile'); 
             } else {
-                res.send('<h1>Xəta!</h1><p>Şifrə yanlışdır.</p><a href="/login">Yenidən yoxla</a>');
+                res.send('Şifrə yanlışdır.');
             }
         } else {
-            res.send('<h1>Xəta!</h1><p>İstifadəçi adı və ya e-poçt tapılmadı.</p><a href="/login">Geri qayıt</a>');
+            res.send('İstifadəçi tapılmadı.');
         }
     } catch (error) {
-        console.error(error);
-        res.status(500).send('Serverdə xəta baş verdi.');
+        res.status(500).send('SQL Xətası: ' + error.message);
     }
 });
 
