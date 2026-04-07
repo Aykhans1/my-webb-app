@@ -1,72 +1,106 @@
-# CyberNotes - Node.js Based Secure Note Portal
+CyberNotes: Security Lab & Note Management System
+Layihə Haqqında
+CyberNotes, müasir veb tətbiqlərdə rast gəlinən təhlükəsizlik boşluqlarını və onların proqram təminatı səviyyəsində həlli yollarını göstərmək üçün hazırlanmış tədris layihəsidir. Bu sistem istifadəçilərə şəxsi qeydlərini saxlamağa imkan verməklə yanaşı, daxilində bilərəkdən yerləşdirilmiş SQL Injection boşluğu vasitəsilə kiber-təhlükəsizlik laboratoriyası funksiyasını yerinə yetirir.
 
-## Layihə Haqqında
-CyberNotes, istifadəçilərin şəxsi və təhlükəsiz qeydlərini saxlaya biləcəyi, Node.js və Express.js freymvorku üzərində qurulmuş tam funksional bir veb tətbiqdir. Layihə həm istifadəçi interfeysi, həm də geniş imkanlara malik idarəetmə paneli (Admin Dashboard) ilə təmin olunmuşdur. Sistem məlumatların təhlükəsizliyi və istifadəçi təcrübəsinin optimallaşdırılması prinsipləri əsasında hazırlanmışdır.
+Əsas Texniki İmkanlar
+Dual-Authentication: İstifadəçilər həm e-poçt ünvanı, həm də istifadəçi adı (username) ilə sistemə daxil ola bilərlər.
 
-## Əsas Funksiyalar
-Layihə aşağıdakı əsas texniki imkanlara malikdir:
+Şəxsi Qeyd Sistemi (CRUD): Hər bir istifadəçi üçün fərdi, digər istifadəçilərdən izolyasiya olunmuş qeyd yaratma və oxuma imkanı.
 
-### 1. Dual-Authentication Sistemi
-İstifadəçilər sistemə daxil olarkən həm qeydiyyatdan keçdikləri e-poçt ünvanından, həm də istifadəçi adlarından (username) istifadə edə bilərlər. Bu, giriş prosesini daha çevik və rahat edir.
+Admin Dashboard: Sistem statistikası (istifadəçi və qeyd sayı), istifadəçi bazasının idarə edilməsi (silmə və rol dəyişmə) və bütün sistem qeydlərinin monitorinqi.
 
-### 2. Şəxsi Qeyd İdarəetməsi (CRUD)
-Hər bir istifadəçi öz profilinə daxil olaraq yeni qeydlər yarada, mövcud qeydlərini görə bilər. Məlumat bazası arxitekturası elə qurulmuşdur ki, hər bir istifadəçi yalnız özünə aid olan məlumatlara çıxış əldə edir.
+Təhlükəsizlik: Şifrələrin Bcrypt ilə hash olunması və sessiyaların avtorizasiya qoruması.
 
-### 3. Təhlükəsizlik və Məlumatların Qorunması
-* **Password Hashing:** İstifadəçi şifrələri verilənlər bazasında açıq şəkildə saxlanılmır. Bcrypt alqoritmi vasitəsilə mürəkkəb şifrələmə (hashing) prosesindən keçirilir.
-* **Session Management:** İstifadəçi seansları express-session kitabxanası ilə idarə olunur, bu da icazəsiz girişlərin qarşısını alır.
-* **Input Validation:** Qeydiyyat zamanı istifadəçi adlarında "@" kimi xüsusi işarələrin istifadəsinə məhdudiyyət qoyulmuşdur ki, bu da e-poçt və istifadəçi adı arasındakı fərqi qəti şəkildə qoruyur.
+Təhlükəsizlik Laboratoriyası: SQL Injection (Vulnerability)
+Bu layihənin əsas xüsusiyyəti, daxilindəki login modulunun SQL Injection hücumlarına qarşı zəif (vulnerable) formada konfiqurasiya edilə bilməsidir.
 
-### 4. Admin Dashboard (İdarəetmə Paneli)
-Admin statusuna malik istifadəçilər üçün xüsusi dizayn edilmiş panel vasitəsilə aşağıdakı əməliyyatlar icra oluna bilər:
-* Sistemdəki ümumi istifadəçi və qeyd sayına real zamanlı nəzarət.
-* İstifadəçilərin siyahısının görüntülənməsi, silinməsi və rollarının (User/Admin) dəyişdirilməsi.
-* Bütün sistem üzrə yazılan qeydlərin monitorinqi və moderatorluq edilməsi.
+Zəiflik Ssenarisi
+Sistemdə istifadəçi məlumatları SQL sorğusuna birbaşa "String Concatenation" metodu ilə daxil edildiyi üçün 1=1 tipli tautologiya hücumları mümkündür.
 
-## İstifadə Olunan Texnologiyalar
-Layihə modern və performanslı texnologiya stack-i üzərində qurulub:
-* **Backend:** Node.js, Express.js
-* **Database:** SQLite3 (Fayl əsaslı, sürətli və konfiqurasiya tələb etməyən baza)
-* **Authentication:** BcryptJS (Şifrələmə), Express-Session (Seans idarəetməsi)
-* **Frontend:** HTML5, CSS3 (Modern və təmiz dizayn), JavaScript (Fetch API)
+Hücum Nümunəsi:
+Login sahəsinə aşağıdakı payload daxil edildikdə:
+' OR 1=1 --
 
-## Quraşdırılma Qaydaları
+Arxa fonda icra olunan SQL sorğusu:
+SELECT * FROM users WHERE email = '' OR 1=1 --' OR username = ...
+
+Bu zaman verilənlər bazası 1=1 şərtini hər zaman doğru (true) qəbul edir və hücumçu şifrəni bilmədən bazadakı ilk istifadəçi (adətən sistem administratoru) kimi giriş əldə edir.
+
+Həll Metodologiyası (Remediation)
+Layihə daxilində bu boşluğun qarşısını almaq üçün Prepared Statements (Parametrləşdirilmiş Sorğular) tətbiq olunmuşdur. Bu metodda istifadəçi girişi SQL əmri kimi deyil, yalnız verilən (data) kimi qəbul edilir və SQL mühərriki tərəfindən zərərsizləşdirilir.
+
+Texnologiya Stack-i
+Server-side: Node.js & Express.js
+
+Verilənlər Bazası: SQLite3 (Fayl əsaslı)
+
+Kriptoqrafiya: BcryptJS
+
+Sessiya İdarəetməsi: Express-Session
+
+Frontend: Modern CSS Grid/Flexbox, Vanilla JavaScript
+
+Quraşdırılma Qaydaları
 Layihəni lokal mühitdə işə salmaq üçün aşağıdakı addımları izləyin:
 
-1. Layihəni klonlayın:
-   ```bash
-   git clone https://github.com/istifadeci_adiniz/cyber-notes.git
-   ```
+Repository-ni klonlayın:
 
-2. Layihə qovluğuna daxil olun:
-   ```bash
-   cd cyber-notes
-   ```
+Bash
+git clone https://github.com/istifadeci_adiniz/cyber-notes.git
+Lazımi kitabxanaları yükləyin:
 
-3. Lazımi asılılıqları (dependencies) yükləyin:
-   ```bash
-   npm install
-   ```
+Bash
+npm install express bcryptjs sqlite3 sqlite express-session
+Tətbiqi başladın:
 
-4. Serveri işə salın:
-   ```bash
-   node app.js
-   ```
+Bash
+node app.js
+Brauzerdə daxil olun:
+http://localhost:3000
 
-5. Brauzerdə daxil olun:
-   `http://localhost:3000`
+Layihə Strukturu
+app.js - Serverin əsas məntiqi, API marşrutları və təhlükəsizlik konfiqurasiyaları.
 
-## İlk Admin Hesabının Yaradılması
-Sistemdə ilk dəfə admin statusu qazanmaq üçün:
-1. `/register` səhifəsindən normal qeydiyyatdan keçin.
-2. Brauzerdə bir dəfəlik `http://localhost:3000/make-me-admin` ünvanına daxil olun.
-3. Bu əməliyyatdan sonra hesabınız admin statusuna yüksələcək və siz `/admin` panelinə daxil ola biləcəksiniz.
+views/ - Login, Register, Profile və Admin Dashboard səhifələri.
 
-## Fayl Strukturu
-* `app.js`: Serverin əsas məntiqi və API marşrutları.
-* `views/`: HTML səhifələri (Login, Register, Profile, Admin).
-* `public/`: CSS üslubları və statik fayllar.
-* `database.sqlite`: Bütün məlumatların saxlandığı verilənlər bazası faylı.
+public/ - Saytın vizual üslubunu təyin edən CSS faylları.
 
-## Müəllif və Lisenziya
-Bu layihə təhsil və praktika məqsədilə hazırlanmışdır. Kodların inkişaf etdirilməsi və şəxsi məqsədlər üçün istifadəsi sərbəstdir. Layihə ilə bağlı hər hansı təklif və ya sualınız olarsa, GitHub üzərindən əlaqə saxlaya bilərsiniz.
+database.sqlite - Bütün məlumatların saxlandığı lokal verilənlər bazası.
+
+----HƏLL ÜÇÜN GƏRƏKLİ KOD 
+// --- TƏHLÜKƏSİZ LOGİN (SQL INJECTION HƏLLİ) ---
+app.post('/login', async (req, res) => {
+    const { identifier, password } = req.body;
+
+    try {
+        // HƏLL: String birləşdirmə yerinə '?' (placeholder) istifadə edirik.
+        // Bu metod istifadəçi daxil etdiyi məlumatı SQL əmri kimi deyil, 
+        // sadəcə xalis mətn (data) kimi qəbul edir.
+        const user = await db.get(
+            'SELECT * FROM users WHERE email = ? OR username = ?', 
+            [identifier, identifier]
+        );
+
+        if (user) {
+            // Şifrənin doğruluğunu yoxlayırıq
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (isMatch) {
+                // Sessiyanı yaradırıq
+                req.session.user = { id: user.id, username: user.username, role: user.role };
+                res.redirect('/profile'); 
+            } else {
+                res.send('<h1>Xəta!</h1><p>Şifrə yanlışdır.</p><a href="/login">Geri qayıt</a>');
+            }
+        } else {
+            res.send('<h1>Xəta!</h1><p>İstifadəçi tapılmadı.</p><a href="/login">Geri qayıt</a>');
+        }
+    } catch (error) {
+        console.error("Login xətası:", error);
+        res.status(500).send('Server xətası baş verdi.');
+    }
+});
+
+ 
+
+Xəbərdarlıq
+Bu layihə yalnız təhsil və laboratoriya testləri üçün nəzərdə tutulmuşdur. Layihə daxilindəki zəif kod nümunələri kiber-təhlükəsizlik boşluqlarını nümayiş etdirmək məqsədi daşıyır. Bu kodların real istehsalat mühitində (production) istifadə edilməsi qətiyyən tövsiyə olunmur. Layihə müəllifi qeyri-etik məqsədlər üçün istifadədən məsuliyyət daşımır.
