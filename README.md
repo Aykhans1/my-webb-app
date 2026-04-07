@@ -67,38 +67,9 @@ public/ - Saytın vizual üslubunu təyin edən CSS faylları.
 
 database.sqlite - Bütün məlumatların saxlandığı lokal verilənlər bazası.
 
-----HƏLL ÜÇÜN GƏRƏKLİ KOD 
 // --- TƏHLÜKƏSİZ LOGİN (SQL INJECTION HƏLLİ) ---
+        const user = await db.get('SELECT * FROM users WHERE email = ? OR username = ?', [identifier, identifier]);
 
-
-app.post('/login', async (req, res) => {
-    const { identifier, password } = req.body;
-    try {
-        // HƏLL: String birləşdirmə yerinə '?' (placeholder) istifadə edirik.
-        // Bu metod istifadəçi daxil etdiyi məlumatı SQL əmri kimi deyil, 
-        // sadəcə xalis mətn (data) kimi qəbul edir.
-        const user = await db.get(
-            'SELECT * FROM users WHERE email = ? OR username = ?', 
-            [identifier, identifier]
-        );
-        if (user) {
-            // Şifrənin doğruluğunu yoxlayırıq
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (isMatch) {
-                // Sessiyanı yaradırıq
-                req.session.user = { id: user.id, username: user.username, role: user.role };
-                res.redirect('/profile'); 
-            } else {
-                res.send('<h1>Xəta!</h1><p>Şifrə yanlışdır.</p><a href="/login">Geri qayıt</a>');
-            }
-        } else {
-            res.send('<h1>Xəta!</h1><p>İstifadəçi tapılmadı.</p><a href="/login">Geri qayıt</a>');
-        }
-    } catch (error) {
-        console.error("Login xətası:", error);
-        res.status(500).send('Server xətası baş verdi.');
-    }
-});
 
  
 
